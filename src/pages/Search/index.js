@@ -1,35 +1,30 @@
 import React, { useState, useEffect } from "react";
-import API from "../../utils/API";
 import Container from "../../components/Container";
 import SearchForm from "../../components/SearchForm";
 import SearchResults from "../../components/SearchResults";
 import Alert from "../../components/Alert";
+import ArticleContext from "../../utils/ArticleContext";
+import API from "../../utils/API";
 
-const Search = () => {
-  const [state, setState] = useState({
-    search: "Wikipedia",
+function Search() {
+  const [articleState, setArticleState] = useState({
     title: "",
     description: "",
-    url: "",
-    error: ""
+    url: ""
   });
-// }
 
-/* class Search extends Component {
-  state = {
-    search: "Wikipedia",
-    title: "",
-    description: "",
-    url: "",
-    error: ""
-  };
-*/
+  const [search, setSearch] = useState("Wikipedia");
+  const [error, setError] = useState("");
 
   // When the component mounts, update the title to be Wikipedia Searcher
   useEffect(() => {
     document.title = "Wikipedia Searcher";
 
-    API.searchTerms(state.search)
+    if (!search) {
+      return;
+    }
+
+    API.searchTerms(search)
       .then(res => {
         if (res.data.length === 0) {
           throw new Error("No results found.");
@@ -37,63 +32,41 @@ const Search = () => {
         if (res.data.status === "error") {
           throw new Error(res.data.message);
         }
-        setState({
+        setArticleState({
           title: res.data[1],
           description: res.data[2][0],
-          url: res.data[3][0],
-          error: ""
+          url: res.data[3][0]
         });
       })
-      .catch(err => setState({ error: err.message }));
-  }, []);
+      .catch(err => setError(err));
+  }, [search]);
 
   const handleInputChange = event => {
-    setState({ search: event.target.value });
+    setSearch(event.target.value);
   };
 
   const handleFormSubmit = event => {
     event.preventDefault();
-    if (!state.search) {
-      return;
-    }
-    API.searchTerms(state.search)
-      .then(res => {
-        if (res.data.length === 0) {
-          throw new Error("No results found.");
-        }
-        if (res.data.status === "error") {
-          throw new Error(res.data.message);
-        }
-        setState({
-          title: res.data[1],
-          description: res.data[2][0],
-          url: res.data[3][0],
-          error: ""
-        });
-      })
-      .catch(err => setState({ error: err.message }));
   };
-    return (
+
+  return (
+    <ArticleContext.Provider value={articleState}>
       <div>
         <Container style={{ minHeight: "100vh" }}>
           <h1 className="text-center">Search For Anything on Wikipedia</h1>
-          <Alert type="danger" style={{ opacity: state.error ? 1 : 0, marginBottom: 10 }}>
-            {setState.error}
+          <Alert type="danger" style={{ opacity: error ? 1 : 0, marginBottom: 10 }}>
+            {error}
           </Alert>
           <SearchForm
             handleFormSubmit={handleFormSubmit}
             handleInputChange={handleInputChange}
-            results={state.search}
+            results={search}
           />
-          <SearchResults
-            title={state.title}
-            description={state.description}
-            url={state.url}
-          />
+          <SearchResults />
         </Container>
       </div>
-    );
-
+    </ArticleContext.Provider>
+  );
 }
 
 export default Search;
