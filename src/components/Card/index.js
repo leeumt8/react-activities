@@ -5,11 +5,11 @@ import CardImg from "../CardImage";
 import CardHeading from "../CardHeading";
 import "./style.css";
 
-function Card({ image }) {
+function Card({image}) {
   return (
     <div>
       <CardHeading />
-      <CardImg />
+      <CardImg image={image}/>
       <CardBody />
       <CardBtn style={{ opacity: image ? 1 : 0 }} />
       <CardBtn style={{ opacity: image ? 1 : 0 }} />

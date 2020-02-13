@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import API from "../utils/API";
 import CardContainer from "../components/CardContainer";
 import Row from "../components/Row";
@@ -35,6 +35,7 @@ function Gallery() {
         API.getUsersByLanguage(languages[0]).then(users => {
           setUsers(users);
           setUser(users[0]);
+          console.log(users[0]);
         });
       })
       .catch(err => console.log(err));
@@ -45,7 +46,7 @@ function Gallery() {
       <h1 className="text-center">Welcome to LinkedUp</h1>
       <h3 className="text-center">Click on the arrows to browse users</h3>
       <Row>
-        <CardContainer />
+        <CardContainer image={user.image} />
       </Row>
     </div>
   );
