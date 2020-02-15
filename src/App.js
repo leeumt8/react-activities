@@ -1,54 +1,66 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useRef } from "react";
+import "./App.css";
 
-function Count() {
-  const dogs = [
-    {
-      name: "Harry",
-      image: "https://images.dog.ceo/breeds/vizsla/n02100583_10960.jpg"
-    },
-    {
-      name: "Hermione",
-      image: "https://images.dog.ceo/breeds/husky/n02110185_1511.jpg"
+function TodoList() {
+  const inputRef = useRef();
+  const [items, dispatch] = useReducer((state, action) => {
+    switch (action.type) {
+    case "add":
+      return [
+        ...state,
+        {
+          id: state.length * Math.random(),
+          name: action.name
+        }
+      ];
+      // Bonus: Remove a todo from the list.
+    case "remove":
+      return state.filter((_, index) => {
+        return index !== action.index;
+      });
+    default:
+      return state;
     }
-  ];
-  /* const [count, dispatch] = useReducer((state,action) => {
-    if(action === "praise") {
-      return state + 1
-    }
-  }, 0); */
+  }, []);
 
-  function reducer(state, action) {
-    switch (action) {
-      case "goodHarry":
-        return {...state, HarryGoods: state.HarryGoods + 1}
-      case "goodHermione":
-        return {...state, HermioneGoods: state.HermioneGoods + 1}
-      default:
-        throw new Error()
-    }
+  function handleSubmit(e) {
+    e.preventDefault();
+    dispatch({
+      type: "add",
+      name: inputRef.current.value
+    });
+    inputRef.current.value = "";
   }
 
-  const [state,dispatch] = useReducer(reducer, {
-    HarryGoods: 0,
-    HermioneGoods: 0
-  })
-
   return (
-    <div className="App">
-      <div className="row mt-5">
-        {dogs.map(item => (
-          <div key={item.name} className="card mx-auto col-4">
-            <img className="card-img-top" src={item.image} alt={item.name} />
-            <div className="card-body">
-              <h4 className="card-title">{item.name}</h4>
-              <p className="card-text">{item.name} has been praised {state[item.name + "Goods"]} times!</p>
-              <button className="btn btn-primary" onClick={() => dispatch(`good${item.name}`)}>Praise</button>
-            </div>
-          </div>
+    <div className="container text-center">
+      <h1>Create a Todo List!</h1>
+      <form className="form-group mt-5" onSubmit={handleSubmit}>
+        <input
+          className="form-control"
+          ref={inputRef}
+          placeholder="Start typing what you need to do..."
+        />
+        <button className="btn btn-success mt-3 mb-5" type="submit">
+          Add to List
+        </button>
+      </form>
+      <h4>My Todo List:</h4>
+      <ul className="list-group">
+        {items.map((item, index) => (
+          <li className="list-group-item" key={item.id}>
+            {item.name}{" "}
+            <button
+              className="btn btn-danger ml-5"
+              onClick={() => dispatch({ type: "remove", index })}
+            >
+              X Remove
+            </button>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
 
-export default Count;
+export default TodoList;
