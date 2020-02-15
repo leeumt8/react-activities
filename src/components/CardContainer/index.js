@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import Card from "../Card";
 import "./style.css";
+import UserContext from "../../utils/UserContext";
 
-function CardContainer({ title, image, language, handleBtnClick }) {
+const CardContainer = () => {
+  const user = useContext(UserContext);
   return (
     <div className="jumbotron card-container">
       <Card
-        title={title}
-        image={image}
-        language={language}
-        handleBtnClick={handleBtnClick}
+        title={user.title}
+        image={user.image}
+        language={user.language}
+        onClick={() => user.onClick()}
       />
     </div>
   );

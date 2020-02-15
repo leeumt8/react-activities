@@ -2,11 +2,22 @@ import React, { useEffect, useState } from "react";
 import API from "../utils/API";
 import CardContainer from "../components/CardContainer";
 import Row from "../components/Row";
+import UserContext from "../utils/UserContext";
 
 function Gallery() {
   const [user, setUser] = useState({});
   const [users, setUsers] = useState([]);
   const [userIndex, setUserIndex] = useState(0);
+
+  const [userState, setUserState] = useState({
+    title: "",
+    image: "",
+    language: "",
+    /*handleBtnClick: {handleBtnClick}*/
+    onClick: (nextUser, previousUser) => {
+      setUserState({ ...userState, nextUser, previousUser});
+    }
+  });
 
   // When the component mounts, a call will be made to get random users.
   useEffect(() => {
@@ -55,7 +66,7 @@ function Gallery() {
   }
 
   return (
-    <div>
+    <UserContext.Provider value={userState}>
       <h1 className="text-center">Welcome to LinkedUp</h1>
       <h3 className="text-center">Click on the arrows to browse users</h3>
       <Row>
@@ -63,10 +74,10 @@ function Gallery() {
           title={user.login}
           image={user.image}
           language={user.language}
-          handleBtnClick={handleBtnClick}
+          onClick={handleBtnClick}
         />
       </Row>
-    </div>
+    </UserContext.Provider>
   );
 }
 
